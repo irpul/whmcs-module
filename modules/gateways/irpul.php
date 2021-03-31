@@ -3,14 +3,15 @@ function irpul_config(){
 	$sql_custom = @mysql_query( "SELECT id,fieldname FROM tblcustomfields WHERE type='client' AND fieldtype='text' ");
 	$custom =array();
 	while( $row_custom = @mysql_fetch_assoc( $sql_custom ) ){
-		$field_id 	= $row_custom['id'];
-		$fieldname 	= $row_custom['fieldname'];
-		$custom[$field_id] = $fieldname;
+		$field_id 			= $row_custom['id'];
+		$fieldname 			= $row_custom['fieldname'];
+		$custom[$field_id] 	= $fieldname;
 	}
 	
     $configarray = array(
 		"FriendlyName" 	=> array("Type" => "System"		, "Value"=>"درگاه ایرپول"),
-		"webgate_id" 	=> array("Type"	=> "text"		, "FriendlyName" => "شناسه درگاه"	, "Size" => "50", ),
+		//"webgate_id" 	=> array("Type"	=> "text"		, "FriendlyName" => "شناسه درگاه"	, "Size" => "50", ),
+		"token" 		=> array("Type"	=> "text"		, "FriendlyName" => "توکن درگاه"	, "Size" => "50", ),
 		"Currencies" 	=> array("Type" => "dropdown"	, "FriendlyName" => "واحد پول سیستم", "Options" => "rial,toman", "Description" => "لطفا واحد پول سیستم خود را انتخاب کنید.",),
 		"mobile_num" 	=> array("Type" => "dropdown"	, "FriendlyName" => "تلفن همراه"	, "Options" => $custom, "Description" => "فیلد مخصوص شماره موبایل را انتخاب کنید",),
     );
@@ -31,9 +32,6 @@ function irpul_link($params) {
 	$address 	= $state . ' ' . $city  .' '. $address1 ;
       
 	$amount = $params['amount']-'.00';
-	if( $params['Currencies'] == 'toman'){
-		$amount = round($amount*10);
-	}
 	
 	$mobile='';
 	foreach($params['clientdetails']['customfields'] as $name ){
@@ -53,6 +51,7 @@ function irpul_link($params) {
 	$i = 0;
 	$len = count($product_item);
 	foreach( $product_item as $pro){
+		$amount1 = str_replace('.00','',$pro['amount']);
 		$product .= $pro['description'] . ' مبلغ: ' .  $pro['amount'] . ' ' .$params['currency'];
 		if ($i!=$len-1) {//not be last loop
 			$product .= '|';
