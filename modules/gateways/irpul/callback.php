@@ -22,7 +22,7 @@ if( isset($_GET['invoiceid']) && $_GET['invoiceid']!='' ){
 		
 		if($decrypted['status']){
 			parse_str($decrypted['data'], $ir_output);
-			$tran_id 	= $ir_output['tran_id'];
+			$trans_id 	= $ir_output['trans_id'];
 			$order_id 	= $ir_output['order_id'];
 			$amount 	= $ir_output['amount'];//rial
 			$refcode	= $ir_output['refcode'];
@@ -32,7 +32,7 @@ if( isset($_GET['invoiceid']) && $_GET['invoiceid']!='' ){
 			
 			//error_log( 'ir_output '. print_r($ir_output,true) );
 			
-			if($order_id!='' && $amount!='' && $tran_id!='' && $status!='' ){//&& $refcode!='' در حالت پرداخت نشده خالی است
+			if($order_id!='' && $amount!='' && $trans_id!='' && $status!='' ){//&& $refcode!='' در حالت پرداخت نشده خالی است
 
 				$invoiceid 	= checkCbInvoiceID($invoiceid, $GATEWAY['name']); # Checks invoice ID is a valid invoice number or ends processing
 
@@ -44,7 +44,7 @@ if( isset($_GET['invoiceid']) && $_GET['invoiceid']!='' ){
 
 					$params = array	(
 						'method' 		=> 'verify',
-						'trans_id' 		=> $tran_id,
+						'trans_id' 		=> $trans_id,
 						'amount'	 	=> $amount//rial
 					);
 					$result 	= post_data('https://irpul.ir/ws.php', $params, $GATEWAY['token']);
@@ -59,23 +59,23 @@ if( isset($_GET['invoiceid']) && $_GET['invoiceid']!='' ){
 
 						if( isset($data['code']) && $data['code'] === 1){
 							addInvoicePayment($invoiceid, $refcode, $amount, 0, $gatewaymodule);
-							logTransaction($GATEWAY["name"]  ,  array( 'invoiceid'=>$invoiceid,'order_id'=>$order_id,'amount'=>$ir_output['amount'],'tran_id'=>$tran_id, 'refcode'=>$refcode, 'status'=>$status )  ,"موفق"); 
+							logTransaction($GATEWAY["name"]  ,  array( 'invoiceid'=>$invoiceid,'order_id'=>$order_id,'amount'=>$ir_output['amount'],'trans_id'=>$trans_id, 'refcode'=>$refcode, 'status'=>$status )  ,"موفق"); 
 							Header('Location: '.$invoice_link);
 						}
 						else{
 							$Show_Status =	'Error Code: '.$data['code'] . '\r\n ' . $data['status'];
 							echo "<script>alert('".$Show_Status."');</script><script>window.location ='".$invoice_link."'</script>";
-							logTransaction(  $GATEWAY["name"] ,  array( 'invoiceid'=>$invoiceid,'order_id'=>$order_id,'amount'=>$ir_output['amount'],'tran_id'=>$tran_id,'status'=>$status)  , "ناموفق") ; 
+							logTransaction(  $GATEWAY["name"] ,  array( 'invoiceid'=>$invoiceid,'order_id'=>$order_id,'amount'=>$ir_output['amount'],'trans_id'=>$trans_id,'status'=>$status)  , "ناموفق") ; 
 						}
 					}else{
 						$Show_Status =	'پاسخی از سرویس دهنده دریافت نشد. لطفا دوباره تلاش نمائید';
 						echo "<script>alert('".$Show_Status."');</script><script>window.location ='".$invoice_link."'</script>";
-						logTransaction(  $GATEWAY["name"] ,  array( 'invoiceid'=>$invoiceid,'order_id'=>$order_id,'amount'=>$ir_output['amount'],'tran_id'=>$tran_id,'status'=>$status)  , "ناموفق") ; 
+						logTransaction(  $GATEWAY["name"] ,  array( 'invoiceid'=>$invoiceid,'order_id'=>$order_id,'amount'=>$ir_output['amount'],'trans_id'=>$trans_id,'status'=>$status)  , "ناموفق") ; 
 					}
 				}else{
 					//$Show_Status =	'unpaid - Error Code: '.$data['code'] . '\r\n ' . $data['status'];
 					//echo "<script>alert('".$Show_Status."');</script><script>window.location ='".$invoice_link."'</script>";
-					logTransaction(  $GATEWAY["name"] ,  array( 'invoiceid'=>$invoiceid,'order_id'=>$order_id,'amount'=>$ir_output['amount'],'tran_id'=>$tran_id,'status'=>$status)  , "ناموفق") ; 
+					logTransaction(  $GATEWAY["name"] ,  array( 'invoiceid'=>$invoiceid,'order_id'=>$order_id,'amount'=>$ir_output['amount'],'trans_id'=>$trans_id,'status'=>$status)  , "ناموفق") ; 
 					Header('Location: '.$invoice_link);
 				}
 			}
