@@ -81,7 +81,7 @@ function url_decrypt($string){
 	}
 	$decrypted = base64_decode($data);
 	
-	$check = array('tran_id','order_id','amount','refcode','status');
+	$check = array('trans_id','order_id','amount','refcode','status');
 	foreach($check as $str){
 		str_replace($str,'',$decrypted,$count);
 		if($count > 0){
