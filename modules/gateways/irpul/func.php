@@ -72,26 +72,4 @@ function post_data($url,$params,$token) {
 	}
 	return $res;
 }
-function url_decrypt($string){
-	$counter = 0;
-	$data = str_replace(array('-','_','.'),array('+','/','='),$string);
-	$mod4 = strlen($data) % 4;
-	if ($mod4) {
-	$data .= substr('====', $mod4);
-	}
-	$decrypted = base64_decode($data);
-	
-	$check = array('trans_id','order_id','amount','refcode','status');
-	foreach($check as $str){
-		str_replace($str,'',$decrypted,$count);
-		if($count > 0){
-			$counter++;
-		}
-	}
-	if($counter === 5){
-		return array('data'=>$decrypted , 'status'=>true);
-	}else{
-		return array('data'=>'' , 'status'=>false);
-	}
-}
 ?>

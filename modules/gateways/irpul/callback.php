@@ -17,20 +17,12 @@ if( isset($_GET['invoiceid']) && $_GET['invoiceid']!='' ){
 		$GATEWAY 		= getGatewayVariables($gatewaymodule);
 		if (!$GATEWAY['type']) die('Module Not Activated'); # Checks gateway module is active before accepting callback
 
-		$irpul_token 	= $_GET['irpul_token'];
-		$decrypted 		= url_decrypt( $irpul_token );
-		
-		if($decrypted['status']){
-			parse_str($decrypted['data'], $ir_output);
-			$trans_id 	= $ir_output['trans_id'];
-			$order_id 	= $ir_output['order_id'];
-			$amount 	= $ir_output['amount'];//rial
-			$refcode	= $ir_output['refcode'];
-			$status 	= $ir_output['status'];
-			
-			//print_r($ir_output);
-			
-			//error_log( 'ir_output '. print_r($ir_output,true) );
+		if( isset($_POST['trans_id']) && isset($_POST['order_id']) && isset($_POST['amount']) && isset($_POST['refcode']) && isset($_POST['status']) ){
+			$trans_id 	= $_POST['trans_id'];
+			$order_id 	= $_POST['order_id'];
+			$amount 	= $_POST['amount'];//rial
+			$refcode	= $_POST['refcode'];
+			$status 	= $_POST['status'];
 			
 			if($order_id!='' && $amount!='' && $trans_id!='' && $status!='' ){//&& $refcode!='' در حالت پرداخت نشده خالی است
 
@@ -58,9 +50,19 @@ if( isset($_GET['invoiceid']) && $_GET['invoiceid']!='' ){
 						$data =  json_decode($result['data'],true);
 
 						if( isset($data['code']) && $data['code'] === 1){
-							addInvoicePayment($invoiceid, $refcode, $amount, 0, $gatewaymodule);
-							logTransaction($GATEWAY["name"]  ,  array( 'invoiceid'=>$invoiceid,'order_id'=>$order_id,'amount'=>$ir_output['amount'],'trans_id'=>$trans_id, 'refcode'=>$refcode, 'status'=>$status )  ,"موفق"); 
-							Header('Location: '.$invoice_link);
+							$irpul_amount  = $data['amount'];
+
+							if($amount == $irpul_amount){
+								//paid
+								addInvoicePayment($invoiceid, $refcode, $amount, 0, $gatewaymodule);
+								logTransaction($GATEWAY["name"]  ,  array( 'invoiceid'=>$invoiceid,'order_id'=>$order_id,'amount'=>$ir_output['amount'],'trans_id'=>$trans_id, 'refcode'=>$refcode, 'status'=>$status )  ,"موفق"); 
+								Header('Location: '.$invoice_link);
+							}
+							else{
+								$Show_Status = 'مبلغ تراکنش در ایرپول (' . number_format($irpul_amount) . ' تومان) تومان با مبلغ تراکنش در سیمانت (' . number_format($amount) . ' تومان) برابر نیست';
+								echo "<script>alert('".$Show_Status."');</script><script>window.location ='".$invoice_link."'</script>";
+								logTransaction(  $GATEWAY["name"] ,  array( 'invoiceid'=>$invoiceid,'order_id'=>$order_id,'amount'=>$ir_output['amount'],'trans_id'=>$trans_id,'status'=>$status)  , "ناموفق") ; 
+							}
 						}
 						else{
 							$Show_Status =	'Error Code: '.$data['code'] . '\r\n ' . $data['status'];
@@ -79,6 +81,10 @@ if( isset($_GET['invoiceid']) && $_GET['invoiceid']!='' ){
 					Header('Location: '.$invoice_link);
 				}
 			}
+		}
+		else{
+			$Show_Status =	"undefined callback parameters";
+			echo "<script>alert('".$Show_Status."');</script><script>window.location ='".$invoice_link."'</script>";
 		}
 	}
 	else{
