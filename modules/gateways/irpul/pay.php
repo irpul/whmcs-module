@@ -39,14 +39,16 @@ if( isset($_POST['invoiceid']) && isset($_POST['amount']) && isset($_POST['produ
 
 	if( $GATEWAY['Currencies'] == 'toman'){
 		$amount = round($amount*10);
-	}	
+	}
+	
+	$order_id 	    = $invoiceid.rand(1000, 9999);
 
 	$params = array(
 		'method' 		=> 'payment',
 		'amount' 		=> $amount,//rial
 		'callback_url' 	=> $callback_url, 
 		'plugin' 		=> 'WHMCS',
-		'order_id'		=> $invoiceid,
+		'order_id'		=> $order_id,
 		'product'		=> $product,
 		'payer_name'	=> $fullname,
 		'phone' 		=> $phone,
