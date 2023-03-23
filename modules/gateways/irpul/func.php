@@ -11,7 +11,7 @@ function redirect($url){
 function post_data($url,$params,$token) {
 	ini_set('default_socket_timeout', 15);
 	
-	if( count($headers)==0 ){
+	if( !isset($headers) || (isset($headers) && count($headers)==0) ){
 		$headers = array(
 			"Authorization: token= {$token}",
 			'Content-type: application/json'
