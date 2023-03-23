@@ -7,9 +7,9 @@ if( isset($_GET['invoiceid']) && $_GET['invoiceid']!='' ){
 	
 	require_once("func.php");
 
-	$whmcs_url	= $CONFIG['SystemURL'];
-	$invoiceid 	= $_GET['invoiceid'];
-	$invoice_link = "{$whmcs_url}/viewinvoice.php?id={$invoiceid}";
+	$whmcs_url		= $CONFIG['SystemURL'];
+	$invoiceid 		= $_GET['invoiceid'];
+	$invoice_link 	= "{$whmcs_url}/viewinvoice.php?id={$invoiceid}";
 	
 	if( isset($_GET['irpul_token']) && $_GET['irpul_token']!='' ){
 		

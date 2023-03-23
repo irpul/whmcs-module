@@ -23,11 +23,10 @@ if( isset($_POST['invoiceid']) && isset($_POST['amount']) && isset($_POST['produ
 	// Checks invoice ID is a valid invoice number or ends processing
 	$invoiceid 	= checkCbInvoiceID($invoiceid, $GATEWAY['name']);
 	
-	$gatewaymodule = 'irpul';
-	$GATEWAY = getGatewayVariables($gatewaymodule);
+	$gatewaymodule 	= 'irpul';
+	$GATEWAY 		= getGatewayVariables($gatewaymodule);
 	if (!$GATEWAY['type']) die('Module Not Activated'); # Checks gateway module is active before accepting callback
 	
-
 	header( 'Content-Type: text/html; charset=UTF-8' );
 
 	$callback_url 	= $CONFIG['SystemURL'] .'/modules/gateways/irpul/callback.php?invoiceid='. $invoiceid;

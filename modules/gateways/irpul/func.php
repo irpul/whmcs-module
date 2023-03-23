@@ -25,7 +25,6 @@ function post_data($url,$params,$token) {
 	curl_setopt($handle, CURLOPT_SSL_VERIFYPEER, false);
 	curl_setopt($handle, CURLOPT_POSTFIELDS, json_encode($params) );
 	curl_setopt($handle, CURLOPT_HTTPHEADER, $headers );
-
 	$response = curl_exec($handle);
 	//error_log('curl response1 : '. print_r($response,true));
 
